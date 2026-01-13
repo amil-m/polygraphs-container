@@ -26,13 +26,15 @@ For GPU support, it will be better to create another contianer based on these im
 - [AMD GPU containers using DGL/ROCM](https://hub.docker.com/r/rocm/dgl)
 
 ## Using the Container
-Running JupyterLab inside the conainer:
+Running JupyterLab inside the container:
 
 ```bash
 container run -p 8888:8888 polygraphs jupyter
 ```
 
-It is useful to have a directory of results to analyse, you can mount one with:
+Jupyter Lab loads from the `/app` directory in the container, all simulations are stored in `/app/polygraphs-cache` by default.
+
+If you want to load a directory of results to analyse located on the host, you can mount one as a volume using:
 
 ```bash
 container run \
@@ -41,10 +43,11 @@ container run \
     polygraphs jupyter
 ```
 
+This command load a directory named `results` inside the container as `/app/results`. Windows users should use `{PWD}` instead of `$(pwd)` for current directory.
 
-When you want to use a config file where you have a local directory called `config` you should mount that first, then the outputs will be sent to a local directory named `polygraphs-cache`
-
-- Inside my local `config` directory, there is a file called `test.yaml`
+### Simulation Configuration
+- Below, a config file located in the host at `config/test.yaml` is used for the simulation
+- Outputs are sent to a host directory called `polygraphs-cache`
 
 ```bash
 container run \
@@ -54,12 +57,12 @@ container run \
 ```
 
 ## Development
-For development it is worth mounting the `app` directory, it should contain a `polygraphs` directory that is a clone of the repo.
+For development mounting the `app` directory as a volume on the host, the host directory should contain a clone of the polygraphs repo.
 
 ```bash
 container run \
-  -v $(pwd):/app \
-  polygraphs run -f /configs/test.yaml
+    -v $(pwd):/app \
+    polygraphs run -f /configs/test.yaml
 ```
 
 or
